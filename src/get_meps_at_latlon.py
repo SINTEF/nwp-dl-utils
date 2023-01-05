@@ -43,7 +43,9 @@ if args.debug:
 # Load and Ingest Timestamps
 timestamps = pd.date_range(start=args.start, end=args.end, freq="6H")
 timestamps = timestamps[:-1]
-records, columns = meps.load_to_records_multiple_forecasts(timestamps, args)
+records, columns = meps.load_to_records_multiple_forecasts(
+    timestamps, args.lat, args.lon
+)
 
 logging.info("Loading into Dataframe")
 df = pd.DataFrame.from_records(records, columns=columns)

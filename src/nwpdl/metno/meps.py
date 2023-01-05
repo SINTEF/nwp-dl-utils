@@ -66,7 +66,7 @@ def _load_diff_and_backfill(ds, ts, variable, xidx, yidx):
 
 
 def load_to_records_single_forecast(
-    url, ts, args, variables_direct, variables_diff_and_backfill
+    url, ts, latitude, longitude, variables_direct, variables_diff_and_backfill
 ):
     # intermedita data structures
     data_direct = {}
@@ -84,7 +84,7 @@ def load_to_records_single_forecast(
     try:
         with xr.open_dataset(url) as ds:
             # find indices of target coordinates
-            xidx, yidx = get_indices_at_coordinates(ds, args)
+            xidx, yidx = get_indices_at_coordinates(ds, latitude, longitude)
             logging.debug(
                 "Nearest Neighbour NWP Cell: (lat,lon) = (%.2f,%.2f)"
                 % (
@@ -134,7 +134,7 @@ def load_to_records_single_forecast(
     return records, columns
 
 
-def load_to_records_multiple_forecasts(timestamps, args):
+def load_to_records_multiple_forecasts(timestamps, latitude, longitude):
     # define the variables from the NWP product we care about
     # first those that we can just load
     variables_direct = [
@@ -168,7 +168,7 @@ def load_to_records_multiple_forecasts(timestamps, args):
         logging.info("Processing %s" % ts)
         logging.debug("Loading %s" % url)
         records_loc, columns = load_to_records_single_forecast(
-            url, ts, args, variables_direct, variables_diff_and_backfill
+            url, ts, latitude, longitude, variables_direct, variables_diff_and_backfill
         )
         records.extend(records_loc)
     return records, columns

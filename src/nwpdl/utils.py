@@ -2,7 +2,7 @@ import numpy as np
 import pyresample
 
 
-def get_indices_at_coordinates(ds, args):
+def get_indices_at_coordinates(ds, latitude, longitude):
     """
     use a kdtree to find the nearest neighbours to the requested lon,lat
     on the lat,lon grid included in the nwp product
@@ -10,8 +10,8 @@ def get_indices_at_coordinates(ds, args):
     """
 
     # requested coordinates
-    lon_req = [args.lon]
-    lat_req = [args.lat]
+    lon_req = [longitude]
+    lat_req = [latitude]
     # lon_req = [config["location"]["lon"]]
     # lat_req = [config["location"]["lat"]]
 
