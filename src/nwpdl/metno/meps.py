@@ -65,6 +65,73 @@ def _load_diff_and_backfill(ds, ts, variable, xidx, yidx):
     return differenced
 
 
+def load_single_forecast(url, ts, args, variables_direct, variables_diff_and_backfill):
+    # intermedita data structures
+    data_direct = {}
+    data_diff_and_backfill = {}
+
+    # setup some lists that we return anyway
+    records = []
+    columns = []
+    for variable in variables_direct:
+        columns.append(variable)
+    for variable in variables_diff_and_backfill:
+        columns.append(variable)
+
+    # load data and do processing
+    try:
+        with xr.open_dataset(url) as ds:
+            # find indices of target coordinates
+            xidx, yidx = get_indices_at_coordinates(ds, args)
+            logging.debug(
+                "Nearest Neighbour NWP Cell: (lat,lon) = (%.2f,%.2f)"
+                % (
+                    ds["latitude"][yidx, xidx].data,
+                    ds["longitude"][yidx, xidx].data,
+                ),
+            )
+
+            # process variables that do not need any post-processing
+            logging.debug("Loading Variables (Direct)")
+            for variable in variables_direct:
+                if variable == "time":
+                    data = ds[variable][:6].data
+                else:
+                    data = ds[variable][:6, 0, yidx, xidx].data
+                data_direct[variable] = data
+
+            # process variables that need differencing and backfilling
+            logging.debug("Loading Variables (Differencing/Backfilling)")
+            for variable in variables_diff_and_backfill:
+                data = _load_diff_and_backfill(
+                    ds,
+                    ts,
+                    variable,
+                    xidx,
+                    yidx,
+                )
+                data_diff_and_backfill[variable] = data
+
+            # append to list of records
+            logging.debug("Appending to List of Records for Bulk Insert")
+            for kk in range(len(data_direct["time"])):
+                record = ()
+                for variable, data in data_direct.items():
+                    if variable == "time":
+                        record += (pd.Timestamp(data[kk]),)
+                    else:
+                        record += (data[kk],)
+                for variable, data in data_diff_and_backfill.items():
+                    record += (data[kk],)
+                records.append(record)
+    except IOError as e:
+        logging.error("IOErrror during Direct Ingestion. Skipping Product.")
+        logging.error(e)
+
+    # return stuff
+    return records, columns
+
+
 def load_to_records(timestamps, args):
     # define the variables from the NWP product we care about
     # first those that we can just load
@@ -98,64 +165,8 @@ def load_to_records(timestamps, args):
         url = _construct_url(ts)
         logging.info("Processing %s" % ts)
         logging.debug("Loading %s" % url)
-        data_direct = {}
-        data_diff_and_backfill = {}
-        try:
-            with xr.open_dataset(url) as ds:
-
-                # find indices of target coordinates
-                xidx, yidx = get_indices_at_coordinates(ds, args)
-                logging.debug(
-                    "Nearest Neighbour NWP Cell: (lat,lon) = (%.2f,%.2f)"
-                    % (
-                        ds["latitude"][yidx, xidx].data,
-                        ds["longitude"][yidx, xidx].data,
-                    ),
-                )
-
-                # process variables that do not need any post-processing
-                logging.debug("Loading Variables (Direct)")
-                for variable in variables_direct:
-                    if variable == "time":
-                        data = ds[variable][:6].data
-                    else:
-                        data = ds[variable][:6, 0, yidx, xidx].data
-                    data_direct[variable] = data
-
-                # process variables that need differencing and backfilling
-                logging.debug("Loading Variables (Differencing/Backfilling)")
-                for variable in variables_diff_and_backfill:
-                    data = _load_diff_and_backfill(
-                        ds,
-                        ts,
-                        variable,
-                        xidx,
-                        yidx,
-                    )
-                    data_diff_and_backfill[variable] = data
-
-                # append to list of records
-                logging.debug("Appending to List of Records for Bulk Insert")
-                for kk in range(len(data_direct["time"])):
-                    record = ()
-                    for variable, data in data_direct.items():
-                        if variable == "time":
-                            record += (pd.Timestamp(data[kk]),)
-                        else:
-                            record += (data[kk],)
-                    for variable, data in data_diff_and_backfill.items():
-                        record += (data[kk],)
-                    records.append(record)
-
-        except IOError as e:
-            logging.error("IOErrror during Direct Ingestion. Skipping Product.")
-            logging.error(e)
-
-    # columns
-    cols = []
-    for variable in variables_direct:
-        cols.append(variable)
-    for variable in variables_diff_and_backfill:
-        cols.append(variable)
-
-    return records, cols
+        records_loc, columns = load_single_forecast(
+            url, ts, args, variables_direct, variables_diff_and_backfill
+        )
+        records.extend(records_loc)
+    return records, columns
