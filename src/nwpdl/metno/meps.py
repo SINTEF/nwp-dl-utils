@@ -65,7 +65,9 @@ def _load_diff_and_backfill(ds, ts, variable, xidx, yidx):
     return differenced
 
 
-def load_single_forecast(url, ts, args, variables_direct, variables_diff_and_backfill):
+def load_to_records_single_forecast(
+    url, ts, args, variables_direct, variables_diff_and_backfill
+):
     # intermedita data structures
     data_direct = {}
     data_diff_and_backfill = {}
@@ -132,7 +134,7 @@ def load_single_forecast(url, ts, args, variables_direct, variables_diff_and_bac
     return records, columns
 
 
-def load_to_records(timestamps, args):
+def load_to_records_multiple_forecasts(timestamps, args):
     # define the variables from the NWP product we care about
     # first those that we can just load
     variables_direct = [
@@ -165,7 +167,7 @@ def load_to_records(timestamps, args):
         url = _construct_url(ts)
         logging.info("Processing %s" % ts)
         logging.debug("Loading %s" % url)
-        records_loc, columns = load_single_forecast(
+        records_loc, columns = load_to_records_single_forecast(
             url, ts, args, variables_direct, variables_diff_and_backfill
         )
         records.extend(records_loc)
