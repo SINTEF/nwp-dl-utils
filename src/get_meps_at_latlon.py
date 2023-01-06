@@ -6,7 +6,7 @@ import argparse
 import datetime
 import logging
 
-import nwpdl.metno.meps as meps
+import nwp_dl_utils.metno.meps as meps
 import pandas as pd
 
 # Logging
