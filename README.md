@@ -39,6 +39,8 @@ python -m build
 python -m twine upload --repository testpypi dist/* 
 ```
 
+Drop `--repository testpypi` to upload to real PyPI.
+
 Test build
 
 ```sh
@@ -46,6 +48,8 @@ conda create --name nwpdl-test python=3.9
 conda activate nwpdl-test
 pip install --index-url https://test.pypi.org/simple/ --no-deps nwp-dl-utils
 ```
+
+Drop `--index-url https://test.pypi.org/simple/ --no-deps` to download from real PyPI.
 
 ## References
 
