@@ -2,7 +2,7 @@
 
 Contains utilities for downloading (relevant parts) of NWP products.
 
-Currently limited to [MEPS product from the Norwegian Meteorological Office][https://thredds.met.no/thredds/metno.html].
+Currently limited to [MEPS product from the Norwegian Meteorological Office](https://thredds.met.no/thredds/metno.html).
 
 Products are accessed remotely using OPeNDAP and only specifically requested data is downloaded.
 
