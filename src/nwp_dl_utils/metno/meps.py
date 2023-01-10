@@ -84,7 +84,9 @@ def load_to_records_single_forecast(
     try:
         with xr.open_dataset(url) as ds:
             # find indices of target coordinates
-            xidx, yidx = get_indices_at_coordinates(ds, latitude, longitude)
+            xindices, yindices = get_indices_at_coordinates(ds, [latitude], [longitude])
+            xidx = xindices[0]
+            yidx = yindices[0]
             logging.debug(
                 "Nearest Neighbour NWP Cell: (lat,lon) = (%.2f,%.2f)"
                 % (

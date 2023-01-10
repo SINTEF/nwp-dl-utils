@@ -2,7 +2,7 @@ import numpy as np
 import pyresample
 
 
-def get_indices_at_coordinates(ds, latitude, longitude):
+def get_indices_at_coordinates(ds, lats_req, lons_req):
     """
     use a kdtree to find the nearest neighbours to the requested lon,lat
     on the lat,lon grid included in the nwp product
@@ -10,8 +10,8 @@ def get_indices_at_coordinates(ds, latitude, longitude):
     """
 
     # requested coordinates
-    lon_req = [longitude]
-    lat_req = [latitude]
+    # lon_req = [longitude]
+    # lat_req = [latitude]
     # lon_req = [config["location"]["lon"]]
     # lat_req = [config["location"]["lat"]]
 
@@ -20,7 +20,7 @@ def get_indices_at_coordinates(ds, latitude, longitude):
     lat_grid = ds["latitude"][:].data  # 2D array
 
     grid = pyresample.geometry.GridDefinition(lons=lon_grid, lats=lat_grid)
-    swath = pyresample.geometry.SwathDefinition(lons=lon_req, lats=lat_req)
+    swath = pyresample.geometry.SwathDefinition(lons=lons_req, lats=lats_req)
 
     # nearest neighbours (wrt great circle distance) in the grid
     _, _, index_array, distance_array = pyresample.kd_tree.get_neighbour_info(
@@ -42,6 +42,6 @@ def get_indices_at_coordinates(ds, latitude, longitude):
     # sys.exit()
 
     # return
-    yidx = index_array_2d[0][0]  # should be 387
-    xidx = index_array_2d[1][0]  # should be 328
-    return xidx, yidx
+    xindices = index_array_2d[0]
+    yindices = index_array_2d[1]
+    return xindices, yindices
