@@ -4,16 +4,19 @@ import pyresample
 
 def get_indices_at_coordinates(ds, lats_req, lons_req):
     """
-    use a kdtree to find the nearest neighbours to the requested lon,lat
-    on the lat,lon grid included in the nwp product
-    cf. https://stackoverflow.com/a/40044540
-    """
+    use a kdtree to find the nearest neighbours to the requested coordinates
+    (lats_req,lon_req) on the (lat,lon) grid included in the nwp product. works for
+    multiples (lat,lon). see also https://stackoverflow.com/a/40044540.
 
-    # requested coordinates
-    # lon_req = [longitude]
-    # lat_req = [latitude]
-    # lon_req = [config["location"]["lon"]]
-    # lat_req = [config["location"]["lat"]]
+    for example, if you pass lats_req = [60,60] and lons_req = [10,10], you get
+    back [387,387] and [328,328]
+
+    :param ds: xarray NWP product dataset
+    :param lats_req: ndarray/list of requested latitudes
+    :param lons_req: ndarray/list of requested longitudes
+    :returns: list of x and y indices into NWP array
+    :rtype: tuple
+    """
 
     # load grids
     lon_grid = ds["longitude"][:].data  # 2D array
