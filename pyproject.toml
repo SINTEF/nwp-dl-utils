@@ -28,3 +28,9 @@ dependencies = [
 [project.urls]
 "Homepage" = "https://github.com/sintef/nwp-dl-utils"
 "Bug Tracker" = "https://github.com/sintef/nwp-dl-utils/issues"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
+pythonpath = "src"
