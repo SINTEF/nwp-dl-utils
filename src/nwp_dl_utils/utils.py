@@ -2,7 +2,7 @@ import numpy as np
 import pyresample
 
 
-def get_indices_at_coordinates(ds, lats_req, lons_req):
+def get_indices_at_coordinates(ds, lats_req, lons_req, fields="latlon"):
     """
     use a kdtree to find the nearest neighbours to the requested coordinates
     (lats_req,lon_req) on the (lat,lon) grid included in the nwp product. works for
@@ -11,16 +11,30 @@ def get_indices_at_coordinates(ds, lats_req, lons_req):
     for example, if you pass lats_req = [60,60] and lons_req = [10,10], you get
     back [387,387] and [328,328]
 
+    if `fields` = "latlon", we will look into the latitude and longitude matrices. we
+    usually use this when working with the MEPS products from MetNo
+
+    if `fields` = "rlatrlon", we will look into the rlat and rlon arrays. we usually
+    use this when working with the MyWaveWAM products from MetNo
+
     :param ds: xarray NWP product dataset
     :param lats_req: ndarray/list of requested latitudes
     :param lons_req: ndarray/list of requested longitudes
+    :param fields: string of either `latlon` or `rlatrlon`
     :returns: list of x and y indices into NWP array
     :rtype: tuple
     """
 
     # load grids
-    lon_grid = ds["longitude"][:].data  # 2D array
-    lat_grid = ds["latitude"][:].data  # 2D array
+    if fields == "latlon":
+        lon_grid = ds["longitude"][:].data  # 2D array
+        lat_grid = ds["latitude"][:].data  # 2D array
+    elif fields == "rlatrlon":
+        rlon = ds["rlon"][:].data  # 1D array
+        rlat = ds["rlat"][:].data  # 1D array
+        lon_grid, lat_grid = np.meshgrid(rlon, rlat)
+    else:
+        raise Exception("Invalid Coordinate Fields.")
 
     grid = pyresample.geometry.GridDefinition(lons=lon_grid, lats=lat_grid)
     swath = pyresample.geometry.SwathDefinition(lons=lons_req, lats=lats_req)
