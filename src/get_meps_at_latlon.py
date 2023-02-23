@@ -19,7 +19,7 @@ logging.Formatter.formatTime = (
         record.created, datetime.timezone.utc
     )
     .astimezone()
-    .isoformat(sep="T", timespec="milliseconds")
+    .isoformat(sep=" ", timespec="seconds")
 )
 logger = logging.getLogger()
 
