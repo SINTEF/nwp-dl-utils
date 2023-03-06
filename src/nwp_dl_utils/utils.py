@@ -1,4 +1,7 @@
+import logging
+
 import numpy as np
+import pandas as pd
 import pyresample
 
 
@@ -62,3 +65,22 @@ def get_indices_at_coordinates(ds, lats_req, lons_req, fields="latlon"):
     xindices = index_array_2d[0]
     yindices = index_array_2d[1]
     return xindices, yindices
+
+
+def get_indices_at_time(ds, ts_req):
+    """
+    :param ds: xarray dataset
+    :param ts_req: ndarray/list of requested timestamps
+    :return indices: ndarray/list of indices for timestamps
+    :rtype: list
+    """
+    ts = pd.to_datetime(ds["time"].data, origin="unix", unit="s", utc=True)
+    tindices = []
+    for kk in range(len(ts_req)):
+        try:
+            tidx = np.argwhere(ts_req[kk] == ts)[0][0]
+        except IndexError:
+            logging.error("Requested Timestamp Not Found. Using Nearest Available.")
+            tidx = np.argmin(np.abs(ts - pd.to_datetime(ts_req)))
+        tindices.append(tidx)
+    return tindices
