@@ -94,7 +94,7 @@ def load_to_sequence(ts, lats, lons):
         for variable in variables_standard_name:
             data[variable] = []
         for kk in range(len(ts)):
-            logging.info("Timeslice %i/%i (%s))" % (kk + 1, len(ts), ts[kk]))
+            logging.debug("Timeslice %i/%i (%s))" % (kk + 1, len(ts), ts[kk]))
             tidx = tindices[kk]
             xidx = xindices[kk]
             yidx = yindices[kk]
