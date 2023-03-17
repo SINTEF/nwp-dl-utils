@@ -59,6 +59,22 @@ def _construct_filelist(local_cache_dir, region="skagerak"):
     return sorted(glob.glob("%s/mywavewam800_%s.an.*.nc" % (local_cache_dir, region)))
 
 
+def _clean_filelist(fnames):
+    # some of these files may have zero size (so they're broken), remove them
+    fnames_invalid = []
+    fnames_valid = []
+    for fname in fnames:
+        if os.path.getsize(fname) > 0:
+            fnames_valid.append(fname)
+        else:
+            fnames_invalid.append(fname)
+    logging.warning(
+        "Dropping %i Invalid Cached Files (Size = 0): %s"
+        % (len(fnames_invalid), fnames_invalid)
+    )
+    return fnames_valid
+
+
 def load_to_sequence(ts, lats, lons, local_cache_dir=None):
     """
     given a sequence of timestamps (`ts`), latitudes (`lats`), and longitudes (`lons`),
@@ -102,11 +118,14 @@ def load_to_sequence(ts, lats, lons, local_cache_dir=None):
         logging.info("Opening Remote Dataset at %s" % _construct_url())
         ds = xr.open_dataset(_construct_url())
     else:
+        logging.info("Indexing/Checking Cached Local Files")
+        flist = _construct_filelist(local_cache_dir)
+        flist = _clean_filelist(flist)
         logging.info("Opening Local Dataset at %s" % local_cache_dir)
         # https://docs.xarray.dev/en/stable/user-guide/io.html#reading-multi-file-datasets
         # https://docs.xarray.dev/en/stable/generated/xarray.open_mfdataset.html
         ds = xr.open_mfdataset(
-            _construct_filelist(local_cache_dir),
+            flist,
             combine="by_coords",
             data_vars="minimal",
             coords="minimal",
