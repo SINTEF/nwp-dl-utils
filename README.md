@@ -2,9 +2,14 @@
 
 Contains utilities for downloading (relevant parts) of NWP products.
 
-Currently limited to [MEPS product from the Norwegian Meteorological Office](https://thredds.met.no/thredds/metno.html).
+Currently focussing on [MetNo](https://thredds.met.no/thredds/catalog.html).
 
-Products are accessed remotely using OPeNDAP and only specifically requested data is downloaded.
+| Product | Remote Access (OPeNDAP) | Local Access (NetCDF4) |
+| ---- | ---- | ---- |
+| [MEPS](https://thredds.met.no/thredds/metno.html) | Yes | No |
+| [MyWaveWAM](https://thredds.met.no/thredds/fou-hi/fou-hi.html) | Yes | Yes |
+
+The package is pre-Alpha software. It does what we need it to do and not much more.
 
 ## Development
 
