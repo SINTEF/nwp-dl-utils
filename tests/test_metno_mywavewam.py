@@ -10,7 +10,7 @@ def test_load_to_sequences():
     ]
     lats = [58.8806, 58.12]
     lons = [10.2103, 10.01]
-    data = mywavewam.load_to_sequence([ts, ts], [lats, lats], [lons, lons])
+    data = mywavewam.load_to_sequences([ts, ts], [lats, lats], [lons, lons])
     # print(data)
 
     # {
