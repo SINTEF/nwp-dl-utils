@@ -81,6 +81,6 @@ def get_indices_at_time(ds, ts_req):
             tidx = np.argwhere(ts_req[kk] == ts)[0][0]
         except IndexError:
             logging.error("Requested Timestamp Not Found. Using Nearest Available.")
-            tidx = np.argmin(np.abs(ts - pd.to_datetime(ts_req)))
+            tidx = np.argmin(np.abs(ts - pd.to_datetime(ts_req[kk])))
         tindices.append(tidx)
     return tindices
