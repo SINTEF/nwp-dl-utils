@@ -1,6 +1,7 @@
 import logging
 import os
 import subprocess
+import sys
 
 import xarray as xr
 
@@ -13,9 +14,17 @@ def download_hourly_for_single_day(
     year = int(date.split("-")[0])
     month = int(date.split("-")[1])
     day = int(date.split("-")[2])
+    product_string_with_region = "mywavewam800"
+    if region == "midtnorge":
+        product_string_with_region += "mhf"
+    elif region == "skagerak":
+        product_string_with_region += "shf"
+    else:
+        logging.critical("Invalid Region. Skipping Download. Terminating.")
+        sys.exit(1)
     url = (
-        "https://thredds.met.no/thredds/fileServer/fou-hi/mywavewam800mhf/mywavewam800_%s.an.%04d%02d%02d18.nc"  # noqa: E501
-        % (region, year, month, day)
+        "https://thredds.met.no/thredds/fileServer/fou-hi/%s/mywavewam800_%s.an.%04d%02d%02d18.nc"  # noqa: E501
+        % (product_string_with_region, region, year, month, day)
     )
     fname = url.split("/")[-1]
     if os.path.exists(fname):
