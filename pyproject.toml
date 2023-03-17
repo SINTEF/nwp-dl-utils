@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "nwp-dl-utils"
-version = "0.0.9"
+version = "0.0.10"
 authors = [
   { name="Volker Hoffmann", email="volker.hoffmann@sintef.no" },
 ]
