@@ -23,6 +23,7 @@ dependencies = [
   "xarray",
   "pyresample",
   "netCDF4==1.5.8",
+  "dask",
 ]
 
 [project.urls]

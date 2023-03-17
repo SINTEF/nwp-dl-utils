@@ -1,3 +1,4 @@
+import glob
 import logging
 import os
 import subprocess
@@ -52,7 +53,13 @@ def _construct_url(product_id="mywavewam800m_skagerrak_hourly"):
     return url
 
 
-def load_to_sequence(ts, lats, lons):
+def _construct_filelist(local_cache_dir, region="skagerak"):
+    flist = sorted(glob.glob("%s/mywavewam800_%s.an.*.nc" % (local_cache_dir, region)))
+    logging.debug("Local NetCDF4 Files: %s" % flist)
+    return sorted(glob.glob("%s/mywavewam800_%s.an.*.nc" % (local_cache_dir, region)))
+
+
+def load_to_sequence(ts, lats, lons, local_cache_dir=None):
     """
     given a sequence of timestamps (`ts`), latitudes (`lats`), and longitudes (`lons`),
     load the requested NWP variables for each triple of (ts,lat,lon). for testing, you
@@ -91,25 +98,40 @@ def load_to_sequence(ts, lats, lons):
     # print(lats)
     # print(lons)
 
-    logging.debug("Constructing URL")
-    url = _construct_url()
-    logging.info("Opening Dataset at %s" % url)
-    with xr.open_dataset(url) as ds:
-        logging.debug("Getting Spatial Indices")
-        xindices, yindices = get_indices_at_coordinates(ds, lats, lons)
-        logging.debug("Getting Temporal Indices")
-        tindices = get_indices_at_time(ds, ts)
-        data = {}
+    if local_cache_dir is None:
+        logging.info("Opening Remote Dataset at %s" % _construct_url())
+        ds = xr.open_dataset(_construct_url())
+    else:
+        logging.info("Opening Local Dataset at %s" % local_cache_dir)
+        # https://docs.xarray.dev/en/stable/user-guide/io.html#reading-multi-file-datasets
+        # https://docs.xarray.dev/en/stable/generated/xarray.open_mfdataset.html
+        ds = xr.open_mfdataset(
+            _construct_filelist(local_cache_dir),
+            combine="by_coords",
+            data_vars="minimal",
+            coords="minimal",
+            compat="override",
+        )
+
+    logging.debug("Getting Spatial Indices")
+    xindices, yindices = get_indices_at_coordinates(ds, lats, lons)
+    logging.debug("Getting Temporal Indices")
+    tindices = get_indices_at_time(ds, ts)
+    data = {}
+    for variable in variables_standard_name:
+        data[variable] = []
+    for kk in range(len(ts)):
+        logging.debug("Timeslice %i/%i (%s))" % (kk + 1, len(ts), ts[kk]))
+        tidx = tindices[kk]
+        xidx = xindices[kk]
+        yidx = yindices[kk]
         for variable in variables_standard_name:
-            data[variable] = []
-        for kk in range(len(ts)):
-            logging.debug("Timeslice %i/%i (%s))" % (kk + 1, len(ts), ts[kk]))
-            tidx = tindices[kk]
-            xidx = xindices[kk]
-            yidx = yindices[kk]
-            for variable in variables_standard_name:
-                logging.debug("Variable %s" % variable)
-                data[variable].append(
-                    float(ds[variables_short_name[variable]][tidx, xidx, yidx].data)
-                )
+            logging.debug("Variable %s" % variable)
+            data[variable].append(
+                float(ds[variables_short_name[variable]][tidx, xidx, yidx].data)
+            )
+
+    logging.info("Closing Dataset")
+    ds.close()
+
     return data
