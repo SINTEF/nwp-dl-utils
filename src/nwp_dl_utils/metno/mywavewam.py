@@ -75,22 +75,28 @@ def _clean_filelist(fnames):
     return fnames_valid
 
 
-def load_to_sequence(ts, lats, lons, local_cache_dir=None):
+def load_to_sequences(ts_all, lats_all, lons_all, local_cache_dir=None):
     """
     given a sequence of timestamps (`ts`), latitudes (`lats`), and longitudes (`lons`),
-    load the requested NWP variables for each triple of (ts,lat,lon). for testing, you
-    can call the function as
+    load the requested NWP variables for each triple of (ts,lat,lon). supports
+    processing multiple sequences.
 
-    ts = [pd.to_datetime('2017-12-21T00:00:00Z'), pd.to_datetime('2017-12-23T00:00:00Z')]
-    lats = [58.8806,58.12]
-    lons = [10.2103,10.01]
-    nwp_dl_utils.metno.mywavewam.load_to_sequence(ts, lats, lons)
+    for testing, you can call the function as
 
-    :param ts: ndarray/list of timestamps
-    :param lats: ndarray/list of latitudes (EPSG 4326)
-    :param lons: ndarray/list of longitudes (EPSG 4326)
-    :return: sequence of NWP data
-    :rtype: dict
+    ts_all = [ [ pd.to_datetime('2017-03-12T00:00:00Z'),
+                 pd.to_datetime('2017-03-13T00:00:00Z') ],
+               [ pd.to_datetime('2017-12-21T00:00:00Z'),
+                 pd.to_datetime('2017-12-23T00:00:00Z') ],
+    lats_all = [ [ 58.8806, 58.12 ], [ 58.8806, 58.12 ] ]
+    lons_all = [ [ 10.2103,10.01 ], [ 10.2103,10.01 ] ]
+
+    nwp_dl_utils.metno.mywavewam.load_to_sequence(ts_all, lats_all, lons_all)
+
+    :param ts: list of ndarray/list of timestamps
+    :param lats: list of ndarray/list of latitudes (EPSG 4326)
+    :param lons: list ndarray/list of longitudes (EPSG 4326)
+    :return: list of sequence of NWP data
+    :rtype: list of dict
     """
 
     # define variables of interest
@@ -132,25 +138,35 @@ def load_to_sequence(ts, lats, lons, local_cache_dir=None):
             compat="override",
         )
 
-    logging.debug("Getting Spatial Indices")
-    xindices, yindices = get_indices_at_coordinates(ds, lats, lons)
-    logging.debug("Getting Temporal Indices")
-    tindices = get_indices_at_time(ds, ts)
-    data = {}
-    for variable in variables_standard_name:
-        data[variable] = []
-    for kk in range(len(ts)):
-        logging.debug("Timeslice %i/%i (%s))" % (kk + 1, len(ts), ts[kk]))
-        tidx = tindices[kk]
-        xidx = xindices[kk]
-        yidx = yindices[kk]
+    data_all = []
+    for kseq in range(len(ts_all)):
+        ts = ts_all[kseq]
+        lats = lats_all[kseq]
+        lons = lons_all[kseq]
+        logging.info(
+            "Extracting Sequence Count %i/%i (Sequence Length: %i)"
+            % (kseq + 1, len(ts_all), len(ts))
+        )
+        logging.debug("Getting Spatial Indices")
+        xindices, yindices = get_indices_at_coordinates(ds, lats, lons)
+        logging.debug("Getting Temporal Indices")
+        tindices = get_indices_at_time(ds, ts)
+        data = {}
         for variable in variables_standard_name:
-            logging.debug("Variable %s" % variable)
-            data[variable].append(
-                float(ds[variables_short_name[variable]][tidx, xidx, yidx].data)
-            )
+            data[variable] = []
+        for kk in range(len(ts)):
+            logging.debug("Timeslice %i/%i (%s))" % (kk + 1, len(ts), ts[kk]))
+            tidx = tindices[kk]
+            xidx = xindices[kk]
+            yidx = yindices[kk]
+            for variable in variables_standard_name:
+                logging.debug("Variable %s" % variable)
+                data[variable].append(
+                    float(ds[variables_short_name[variable]][tidx, xidx, yidx].data)
+                )
+        data_all.append(data)
 
     logging.info("Closing Dataset")
     ds.close()
 
-    return data
+    return data_all

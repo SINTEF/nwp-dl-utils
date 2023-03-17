@@ -3,14 +3,14 @@ import nwp_dl_utils.metno.mywavewam as mywavewam
 import pandas as pd
 
 
-def test_load_to_sequence():
+def test_load_to_sequences():
     ts = [
         pd.to_datetime("2017-12-21T00:00:00Z"),
         pd.to_datetime("2017-12-23T00:00:00Z"),
     ]
     lats = [58.8806, 58.12]
     lons = [10.2103, 10.01]
-    data = mywavewam.load_to_sequence(ts, lats, lons)
+    data = mywavewam.load_to_sequence([ts, ts], [lats, lats], [lons, lons])
     # print(data)
 
     # {
@@ -37,15 +37,16 @@ def test_load_to_sequence():
         ]
     )
 
-    np.testing.assert_almost_equal(data["wind_speed"], wind_speed)
-    np.testing.assert_almost_equal(data["wind_to_direction"], wind_to_direction)
+    np.testing.assert_almost_equal(data[0]["wind_speed"], wind_speed)
+    np.testing.assert_almost_equal(data[0]["wind_to_direction"], wind_to_direction)
     np.testing.assert_almost_equal(
-        data["sea_surface_wave_significant_height"], sea_surface_wave_significant_height
+        data[0]["sea_surface_wave_significant_height"],
+        sea_surface_wave_significant_height,
     )
     np.testing.assert_almost_equal(
-        data["sea_surface_wave_to_direction"], sea_surface_wave_to_direction
+        data[0]["sea_surface_wave_to_direction"], sea_surface_wave_to_direction
     )
     np.testing.assert_almost_equal(
-        data["sea_surface_wave_peak_period_from_variance_spectral_density"],
+        data[0]["sea_surface_wave_peak_period_from_variance_spectral_density"],
         sea_surface_wave_peak_period_from_variance_spectral_density,
     )
