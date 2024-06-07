@@ -22,7 +22,7 @@ dependencies = [
   "numpy",
   "xarray",
   "pyresample",
-  "netCDF4==1.5.8",
+  "netCDF4",
   "dask",
 ]
 
