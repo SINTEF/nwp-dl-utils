@@ -8,6 +8,7 @@ Currently focussing on [MetNo](https://thredds.met.no/thredds/catalog.html).
 | ---- | ---- | ---- |
 | [MEPS](https://thredds.met.no/thredds/metno.html) | Yes | No |
 | [MyWaveWAM](https://thredds.met.no/thredds/fou-hi/fou-hi.html) | Yes | Yes |
+| [NorKyst800m](https://thredds.met.no/thredds/fou-hi/norkyst800v2.html) | Yes | No |
 
 The package is pre-Alpha software. It does what we need it to do and not much more.
 
