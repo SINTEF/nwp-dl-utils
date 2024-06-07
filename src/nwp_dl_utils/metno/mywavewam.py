@@ -3,15 +3,21 @@ import logging
 import os
 import subprocess
 import sys
+from typing import Dict, List
 
+import pandas as pd
 import xarray as xr
 
 from ..utils import get_indices_at_coordinates, get_indices_at_time
 
 
 def download_hourly_for_single_day(
-    date, region="midtnorge", basedir=".", force=False, quiet=False
-):
+    date: str,
+    region: str = "midtnorge",
+    basedir: str = ".",
+    force: bool = False,
+    quiet: bool = False,
+) -> str:
     year = int(date.split("-")[0])
     month = int(date.split("-")[1])
     day = int(date.split("-")[2])
@@ -47,19 +53,19 @@ def download_hourly_for_single_day(
     return fname
 
 
-def _construct_url(product_id="mywavewam800m_skagerrak_hourly"):
+def _construct_url(product_id: str = "mywavewam800m_skagerrak_hourly") -> str:
     if product_id == "mywavewam800m_skagerrak_hourly":
         url = "https://thredds.met.no/thredds/dodsC/fou-hi/mywavewam800s_be"
     return url
 
 
-def _construct_filelist(local_cache_dir, region="skagerak"):
+def _construct_filelist(local_cache_dir: str, region: str = "skagerak") -> List[str]:
     flist = sorted(glob.glob("%s/mywavewam800_%s.an.*.nc" % (local_cache_dir, region)))
     logging.debug("Local NetCDF4 Files: %s" % flist)
     return sorted(glob.glob("%s/mywavewam800_%s.an.*.nc" % (local_cache_dir, region)))
 
 
-def _clean_filelist(fnames):
+def _clean_filelist(fnames: List[str]) -> List[str]:
     # some of these files may have zero size (so they're broken), remove them
     fnames_invalid = []
     fnames_valid = []
@@ -75,7 +81,12 @@ def _clean_filelist(fnames):
     return fnames_valid
 
 
-def load_to_sequences(ts_all, lats_all, lons_all, local_cache_dir=None):
+def load_to_sequences(
+    ts_all: List[List[pd.Timestamp]],
+    lats_all: List[List[float]],
+    lons_all: List[List[float]],
+    local_cache_dir: str = None,
+) -> List[Dict[str, List[float]]]:
     """
     given a sequence of timestamps (`ts`), latitudes (`lats`), and longitudes (`lons`),
     load the requested NWP variables for each triple of (ts,lat,lon). supports
@@ -151,7 +162,7 @@ def load_to_sequences(ts_all, lats_all, lons_all, local_cache_dir=None):
         xindices, yindices = get_indices_at_coordinates(ds, lats, lons)
         logging.debug("Getting Temporal Indices")
         tindices = get_indices_at_time(ds, ts)
-        data = {}
+        data: Dict[str, List[float]] = {}
         for variable in variables_standard_name:
             data[variable] = []
         for kk in range(len(ts)):

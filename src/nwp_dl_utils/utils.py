@@ -1,11 +1,19 @@
 import logging
+from typing import List, Tuple, Union
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 import pyresample
+import xarray as xr
 
 
-def get_indices_at_coordinates(ds, lats_req, lons_req, fields="latlon"):
+def get_indices_at_coordinates(
+    ds: xr.Dataset,
+    lats_req: Union[List[pd.Timestamp], npt.NDArray],
+    lons_req: Union[List[pd.Timestamp], npt.NDArray],
+    fields: str = "latlon",
+) -> Tuple[npt.NDArray, npt.NDArray]:
     """
     use a kdtree to find the nearest neighbours to the requested coordinates
     (lats_req,lon_req) on the (lat,lon) grid included in the nwp product. works for
@@ -67,7 +75,9 @@ def get_indices_at_coordinates(ds, lats_req, lons_req, fields="latlon"):
     return xindices, yindices
 
 
-def get_indices_at_time(ds, ts_req):
+def get_indices_at_time(
+    ds: xr.Dataset, ts_req: Union[List[pd.Timestamp], npt.NDArray]
+) -> List[int]:
     """
     :param ds: xarray dataset
     :param ts_req: ndarray/list of requested timestamps
