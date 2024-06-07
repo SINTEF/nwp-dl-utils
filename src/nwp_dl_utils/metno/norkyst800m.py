@@ -81,11 +81,15 @@ def load_to_dataframe(
         for kk_spatial in range(len(xindices)):
             xidx = xindices[kk_spatial]
             yidx = yindices[kk_spatial]
+            logging.debug("(tidx,xidx,yidx) = (%i,%i,%i)" % (tidx, xidx, yidx))
             logging.debug(
-                "(Timestamp,Lat,Lon) = (%s,%.2f,%.2f)"
+                "(Timestamp,Lat/Req,Lon/Req) = (%s,%.3f,%.3f)"
                 % (ts, latitudes[kk_spatial], longitudes[kk_spatial])
             )
-            logging.debug("(tidx,xidx,yidx) = (%i,%i,%i)" % (tidx, xidx, yidx))
+            logging.debug(
+                "(Timestamp,Lat/Rcv,Lon/Rcv) = (%s,%.3f,%.3f)"
+                % (ts, ds["lat"][xidx, yidx].data, ds["lon"][xidx, yidx].data)
+            )
             for variable in variables_of_interest:
                 variable_value = float(ds[variable][tidx, 0, xidx, yidx].data)
                 logging.debug("Variable %s = %.2f" % (variable, variable_value))
