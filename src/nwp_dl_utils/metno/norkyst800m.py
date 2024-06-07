@@ -60,7 +60,9 @@ def load_to_dataframe(
     ds = xr.open_dataset(URL_NORKYST800M)
 
     logging.debug("Querying Indices")
-    xindices, yindices = get_indices_at_coordinates(ds, latitudes, longitudes)
+    xindices, yindices = get_indices_at_coordinates(
+        ds, latitudes, longitudes, fields="latlon_short"
+    )
     tindices = get_indices_at_time(ds, timestamps)
     logging.debug("Retrieved %i Spatial Indices (x): %s" % (len(xindices), xindices))
     logging.debug("Retrieved %i Spatial Indices (y): %s" % (len(yindices), yindices))

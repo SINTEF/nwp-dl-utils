@@ -25,6 +25,9 @@ def get_indices_at_coordinates(
     if `fields` = "latlon", we will look into the latitude and longitude matrices. we
     usually use this when working with the MEPS products from MetNo
 
+    if `fields` = "latlon_short", we will look into the lat and long matrices. we usually use
+    this when working with the NorKyst800m products from MetNo
+
     if `fields` = "rlatrlon", we will look into the rlat and rlon arrays. we usually
     use this when working with the MyWaveWAM products from MetNo
 
@@ -40,6 +43,9 @@ def get_indices_at_coordinates(
     if fields == "latlon":
         lon_grid = ds["longitude"][:].data  # 2D array
         lat_grid = ds["latitude"][:].data  # 2D array
+    if fields == "latlon_short":
+        lon_grid = ds["lon"][:].data  # 2D array
+        lat_grid = ds["lat"][:].data  # 2D array
     elif fields == "rlatrlon":
         rlon = ds["rlon"][:].data  # 1D array
         rlat = ds["rlat"][:].data  # 1D array
