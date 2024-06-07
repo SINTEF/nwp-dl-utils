@@ -13,15 +13,14 @@ The package is pre-Alpha software. It does what we need it to do and not much mo
 
 ## Development
 
+We'll assume you're using [Miniforge](https://github.com/conda-forge/miniforge).
+
 Setting up a development space
 
 ```sh
-conda create --name nwpdl-dev python=3.9
+conda create --name nwpdl-dev
 conda activate nwpdl-dev
-conda install numpy xarray pandas
-conda install pytest
-conda install -c conda-forge pyresample
-conda install -c conda-forge netCDF4
+mamba install numpy xarray pandas pytest pyresample netCDF4 dask
 conda deactivate nwpdl-dev
 conda activate nwpdl-dev
 ```
@@ -51,7 +50,7 @@ This needs `pip>=21.3`, see [here](https://stackoverflow.com/a/69711730) and [he
 Setup environment
 
 ```sh
-conda create --name nwpdl-build python=3.9
+conda create --name nwpdl-build
 conda activate nwpdl-build
 pip install --upgrade pip
 pip install --upgrade build
@@ -70,7 +69,7 @@ Drop `--repository testpypi` to upload to real PyPI.
 Test build
 
 ```sh
-conda create --name nwpdl-test python=3.9
+conda create --name nwpdl-test
 conda activate nwpdl-test
 pip install --index-url https://test.pypi.org/simple/ --no-deps nwp-dl-utils
 ```
