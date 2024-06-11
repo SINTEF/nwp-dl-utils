@@ -90,7 +90,7 @@ def main():
 
     # Load and Format Timestamps
     logging.info("Reading Timestamps from %s" % args.timestamps)
-    df_timestamps = pd.read_csv("timestamps.csv", parse_dates=["timestamp"])
+    df_timestamps = pd.read_csv(args.timestamps, parse_dates=["timestamp"])
     timestamps = [
         pd.to_datetime(ts, utc=True) for ts in list(df_timestamps.timestamp.values)
     ]
