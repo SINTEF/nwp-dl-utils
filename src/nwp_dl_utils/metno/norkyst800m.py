@@ -1,6 +1,5 @@
 import logging
-import pprint
-from typing import Dict, List
+from typing import List
 
 import pandas as pd
 import xarray as xr
@@ -17,9 +16,10 @@ def load_to_dataframe(
     location_id: List[int],
 ) -> pd.DataFrame:
     """
-    Given lists of timestamps (`timestamps`), latitudes (`lats`), and longitudes (`lons`), do
-    an outer loop over all timestamps and an inner loop over all locations. We also need
-    to pass `location_id` which is a list of integers that uniquely identify a location.
+    Given lists of timestamps (`timestamps`), latitudes (`lats`), and longitudes
+    (`lons`), do an outer loop over all timestamps and an inner loop over all locations.
+    We also need to pass `location_id` which is a list of integers that uniquely
+    identify a location.
 
     for testing, you can call the function as
 
