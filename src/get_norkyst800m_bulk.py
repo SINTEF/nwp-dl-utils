@@ -9,9 +9,9 @@ $ python ./get_norkyst800m_bulk.py \
 
 Where
 $ cat locations.csv
-latitude,longitude
-59.371235,5.216333
-69.70953,18.363983
+location_id,latitude,longitude
+98.59.371235,5.216333
+99,69.70953,18.363983
 
 $ cat timestamps.csv
 timestamp
@@ -86,6 +86,7 @@ def main():
     df_locations = pd.read_csv(args.locations)
     latitudes = df_locations.latitude.values
     longitudes = df_locations.longitude.values
+    location_id = df_locations.location_id
 
     # Load and Format Timestamps
     logging.info("Reading Timestamps from %s" % args.timestamps)
@@ -103,7 +104,9 @@ def main():
     # lats = [59.371235, 69.70953]
     # lons = [5.216333, 18.363983]
     logging.info("Querying Data and Loading to Dataframe")
-    df_output = norkyst800m.load_to_dataframe(timestamps, latitudes, longitudes)
+    df_output = norkyst800m.load_to_dataframe(
+        timestamps, latitudes, longitudes, location_id
+    )
     logging.info("Writing to %s" % args.output)
     df_output.to_csv(args.output, index=False)
 

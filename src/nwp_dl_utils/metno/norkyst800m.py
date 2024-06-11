@@ -14,10 +14,12 @@ def load_to_dataframe(
     timestamps: List[pd.Timestamp],
     latitudes: List[float],
     longitudes: List[float],
+    location_id: List[int],
 ) -> pd.DataFrame:
     """
     Given lists of timestamps (`timestamps`), latitudes (`lats`), and longitudes (`lons`), do
-    an outer loop over all timestamps and an inner loop over all locations.
+    an outer loop over all timestamps and an inner loop over all locations. We also need
+    to pass `location_id` which is a list of integers that uniquely identify a location.
 
     for testing, you can call the function as
 
@@ -26,6 +28,7 @@ def load_to_dataframe(
                    pd.to_datetime('2024-01-02T00:00:00Z', utc=True) ]
     latitudes = [ 59.371235, 69.70953 ]
     longitudes = [ 5.216333, 18.363983 ]
+    location_id = [ 1, 2 ]
 
     viz.
 
@@ -41,6 +44,7 @@ def load_to_dataframe(
     :param ts: ndarray/list of timestamps
     :param lats: ndarray/list of latitudes (EPSG 4326)
     :param lons: ndarray/list of longitudes (EPSG 4326)
+    :paral location_id: ndarray/list of location identifiers
     :return: pandas dataframe with data from model
     :rtype: pandas dataframe
     """
@@ -70,6 +74,7 @@ def load_to_dataframe(
 
     data = {}
     data["timestamp"] = []
+    data["location_id"] = []
     data["latitude"] = []
     data["longitude"] = []
     for variable in variables_of_interest:
@@ -95,6 +100,7 @@ def load_to_dataframe(
                 logging.debug("Variable %s = %.2f" % (variable, variable_value))
                 data[variable].append(variable_value)
             data["timestamp"].append(ts)
+            data["location_id"].append(location_id[kk_spatial])
             data["latitude"].append(latitudes[kk_spatial])
             data["longitude"].append(longitudes[kk_spatial])
 
