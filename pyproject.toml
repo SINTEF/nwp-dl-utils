@@ -10,7 +10,7 @@ authors = [
 ]
 description = "Tools to download (relevant parts of) various NWP products."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
