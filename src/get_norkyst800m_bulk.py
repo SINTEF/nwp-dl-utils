@@ -95,6 +95,14 @@ def main():
         pd.to_datetime(ts, utc=True) for ts in list(df_timestamps.timestamp.values)
     ]
 
+    # Some Info
+    logging.info(
+        "Read %i Locations and %i Timestamps." % (len(df_locations), len(df_timestamps))
+    )
+    logging.info(
+        "Retrieving %i Total Datapoints." % (len(df_timestamps) * len(df_locations))
+    )
+
     # logging.info("Done")
     # timestamps = [
     #     pd.to_datetime("2023-12-01T00:00:00Z"),
