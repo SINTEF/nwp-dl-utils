@@ -32,18 +32,22 @@ def load_to_dataframe(
 
     viz.
 
-    >>> nwp_dl_utils.metno.norkyst800m.load_to_dataframe(timestamps, latitudes, longitudes)
-    timestamp   latitude  longitude  temperature   salinity
-    0 2023-10-21 00:00:00+00:00  59.371235   5.216333    12.009999  33.139999
-    1 2023-10-21 00:00:00+00:00  69.709530  18.363983     8.460000  33.721001
-    2 2023-12-23 00:00:00+00:00  59.371235   5.216333     8.360000  34.042000
-    3 2023-12-23 00:00:00+00:00  69.709530  18.363983     5.060000  33.946999
-    4 2024-01-02 00:00:00+00:00  59.371235   5.216333     7.200000  33.073002
-    5 2024-01-02 00:00:00+00:00  69.709530  18.363983     4.460000  33.970001
+    In [1]: nwp_dl_utils.metno.norkyst800m.load_to_dataframe(timestamps,
+                                                             latitudes,
+                                                             longitudes,
+                                                             location_id)
+    Out[1]:
+                      timestamp  location_id   latitude  longitude  temperature   salinity
+    0 2023-10-21 00:00:00+00:00            1  59.371235   5.216333    12.009999  33.139999
+    1 2023-10-21 00:00:00+00:00            2  69.709530  18.363983     8.460000  33.721001
+    2 2023-12-23 00:00:00+00:00            1  59.371235   5.216333     8.360000  34.042000
+    3 2023-12-23 00:00:00+00:00            2  69.709530  18.363983     5.060000  33.946999
+    4 2024-01-02 00:00:00+00:00            1  59.371235   5.216333     7.200000  33.073002
+    5 2024-01-02 00:00:00+00:00            2  69.709530  18.363983     4.460000  33.970001
 
     :param ts: ndarray/list of timestamps
-    :param lats: ndarray/list of latitudes (EPSG 4326)
-    :param lons: ndarray/list of longitudes (EPSG 4326)
+    :param latitudes: ndarray/list of latitudes (EPSG 4326)
+    :param longitudes: ndarray/list of longitudes (EPSG 4326)
     :paral location_id: ndarray/list of location identifiers
     :return: pandas dataframe with data from model
     :rtype: pandas dataframe
